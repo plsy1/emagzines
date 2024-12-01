@@ -62,7 +62,7 @@ jobs:
 
             # Extract cover image
             cover_image="cover/cover.jpg"
-            ebook-meta "$epub_path" --get-cover="$cover_image"
+            ebook-meta "$new_epub_path" --get-cover="$cover_image"
             echo "Cover extracted and saved to $cover_image"
           }
           
