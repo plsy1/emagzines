@@ -9,7 +9,7 @@ jobs:
   worker:
     runs-on: ubuntu-latest
     env:
-      output: converted_ebooks
+      output: /converted_ebooks
       publisher: plsy1.github.io
       author: y1
     steps:
