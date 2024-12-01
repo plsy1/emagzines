@@ -1,0 +1,119 @@
+name: The Economist
+run-name: 'The Economist: ${{ github.ref_name }}'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 5'
+    - cron: '0 4 * * 6'
+    - cron: '0 4 * * 0'
+jobs:
+  worker:
+    runs-on: ubuntu-latest
+    env:
+      output: converted_ebooks
+      publisher: plsy1.github.io
+      author: y1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        if: ${{ success() }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Calibre
+        if: ${{ success() }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install libegl1 libopengl0 libxcb-cursor0
+          url=https://download.calibre-ebook.com/linux-installer.sh
+          sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+      - name: Converting Ebook
+        if: ${{ success() }}
+        run: |
+          mkdir -p $output
+          convert_ebook() {
+            recipe_name="The Economist"
+            recipe_path="${recipe_name}.recipe"
+            echo "Converting \"$recipe_path\"..."
+            ebook_name="${recipe_path%.*}"
+            
+            # EPUB
+            epub_path="$ebook_name.epub"
+            echo "Converting \"$recipe_path\" > \"$epub_path\"..."
+            arguments="--authors=\"$author\" --publisher=\"$publisher\""
+            cover="covers/${ebook_name}.png"
+            if [ -f "$cover" ]; then arguments+=" --cover=\"$cover\""; fi
+            style="styles/${ebook_name}.css"
+            if [ -f "$style" ]; then arguments+=" --extra-css=\"$style\""; fi
+            echo $arguments | xargs ebook-convert "$recipe_path" "$epub_path"
+            title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
+            new_epub_path="${output}/${title}.epub"
+            echo "Renaming \"$epub_path\" > \"$new_epub_path\""
+            mv "$epub_path" "$new_epub_path"
+        
+            # EPUB -> PDF
+            epub_file="${output}/${title}.epub"
+            pdf_path="${output}/${title}.pdf"
+            echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
+            pdf_arguments="--authors=\"$author\" --publisher=\"$publisher\""
+            if [ -f "$cover" ]; then pdf_arguments+=" --cover=\"$cover\""; fi
+            if [ -f "$style" ]; then pdf_arguments+=" --extra-css=\"$style\""; fi
+            echo $pdf_arguments | xargs ebook-convert "$epub_file" "$pdf_path"
+          }
+          
+          convert_ebook
+
+      - name: Rename Files
+        if: ${{ success() }}
+        run: |
+          for file in "$output"/*.{epub,pdf}; do
+            if [ -f "$file" ]; then
+              if [[ "$file" =~ \[([A-Za-z]+)\ ([0-9]{1,2}),\ ([0-9]{4})\] ]]; then
+                month="${BASH_REMATCH[1]}"
+                day="${BASH_REMATCH[2]}"
+                year="${BASH_REMATCH[3]}"
+                case $month in
+                  Jan) month_num="01" ;;
+                  Feb) month_num="02" ;;
+                  Mar) month_num="03" ;;
+                  Apr) month_num="04" ;;
+                  May) month_num="05" ;;
+                  Jun) month_num="06" ;;
+                  Jul) month_num="07" ;;
+                  Aug) month_num="08" ;;
+                  Sep) month_num="09" ;;
+                  Oct) month_num="10" ;;
+                  Nov) month_num="11" ;;
+                  Dec) month_num="12" ;;
+                  *) month_num="01" ;;
+                esac
+
+                formatted_date="${year}${month_num}$(printf "%02d" $day)"
+                base_name=$(basename "$file" .${file##*.})
+                new_name="${formatted_date} - The Economist.${file##*.}"
+                mv "$file" "$output/$new_name"
+                echo "Renamed $file to $new_name"
+              else
+                echo "Skipping file: $file (no valid date found)"
+              fi
+            fi
+          done
+      - name: Push to books branch
+        if: ${{ success() }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin books
+          git checkout books
+          mkdir -p the_economist
+          mv $output/* the_economist/
+          git add the_economist/*
+          if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
+            git commit -m "Add new ebooks"
+            git push origin books
+          else
+            echo "No changes to push."
+          fi
