@@ -2,10 +2,10 @@ import os
 import re
 from datetime import datetime
 
+books_dir = "converted_ebooks"
 
 def move_books():
     # Loop through each file in the directory
-    books_dir = "converted_ebooks"
     date_str = ''
     for filename in os.listdir(books_dir):
         if filename == 'cover.jpg':
@@ -43,8 +43,7 @@ def move_books():
 
 
 def move_cover(newDir):
-    cover_dir = "cover"
-    old_file_path = os.path.join(cover_dir, "cover.jpg")
+    old_file_path = os.path.join(books_dir, "cover.jpg")
     new_file_path = os.path.join(newDir, "cover.jpg")
     os.rename(old_file_path, new_file_path)
     print(f"Cover Renamed: {old_file_path} -> {new_file_path}")
