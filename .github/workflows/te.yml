@@ -7,6 +7,7 @@ on:
     - cron: '0 4 * * 5'
     - cron: '0 4 * * 6'
     - cron: '0 4 * * 0'
+
 jobs:
   worker:
     runs-on: ubuntu-latest
@@ -14,23 +15,28 @@ jobs:
       output: converted_ebooks
       publisher: plsy1.github.io
       author: y1
+
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # Step 2: Set up Python
       - name: Set up Python
-        if: ${{ success() }}
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      # Step 3: Install Calibre
       - name: Install Calibre
-        if: ${{ success() }}
         run: |
           sudo apt-get update
           sudo apt-get install libegl1 libopengl0 libxcb-cursor0
           url=https://download.calibre-ebook.com/linux-installer.sh
           sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+
+      # Step 4: Convert Ebook
       - name: Converting Ebook
-        if: ${{ success() }}
         run: |
           mkdir -p $output
           convert_ebook() {
@@ -38,35 +44,33 @@ jobs:
             recipe_path="${recipe_name}.recipe"
             echo "Converting \"$recipe_path\"..."
             ebook_name="${recipe_path%.*}"
-            
-            # EPUB
+
+            # Convert to EPUB
             epub_path="$ebook_name.epub"
             echo "Converting \"$recipe_path\" > \"$epub_path\"..."
-            arguments="--authors=\"$author\" --publisher=\"$publisher\""
-            cover="covers/${ebook_name}.png"
-            if [ -f "$cover" ]; then arguments+=" --cover=\"$cover\""; fi
-            style="styles/${ebook_name}.css"
-            if [ -f "$style" ]; then arguments+=" --extra-css=\"$style\""; fi
-            echo $arguments | xargs ebook-convert "$recipe_path" "$epub_path"
+            ebook-convert "$recipe_path" "$epub_path"
+
+            # Extract cover image
+            cover_image="${output}/cover.jpg"
+            ebook-meta "$epub_path" --get-cover="$cover_image"
+            echo "Cover extracted and saved to $cover_image"
+
+            # Rename EPUB
             title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
             new_epub_path="${output}/${title}.epub"
-            echo "Renaming \"$epub_path\" > \"$new_epub_path\""
             mv "$epub_path" "$new_epub_path"
-        
-            # EPUB -> PDF
+
+            # Convert to PDF
             epub_file="${output}/${title}.epub"
             pdf_path="${output}/${title}.pdf"
             echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
-            pdf_arguments="--authors=\"$author\" --publisher=\"$publisher\""
-            if [ -f "$cover" ]; then pdf_arguments+=" --cover=\"$cover\""; fi
-            if [ -f "$style" ]; then pdf_arguments+=" --extra-css=\"$style\""; fi
-            echo $pdf_arguments | xargs ebook-convert "$epub_file" "$pdf_path"
+            ebook-convert "$epub_file" "$pdf_path"
           }
-          
+
           convert_ebook
 
-      - name: Rename Files
-        if: ${{ success() }}
+      # Step 5: Rename files with formatted date and create subdirectory
+      - name: Rename Files and Create Subdirectory
         run: |
           for file in "$output"/*.{epub,pdf}; do
             if [ -f "$file" ]; then
@@ -93,15 +97,27 @@ jobs:
                 formatted_date="${year}${month_num}$(printf "%02d" $day)"
                 base_name=$(basename "$file" .${file##*.})
                 new_name="${formatted_date} - The Economist.${file##*.}"
-                mv "$file" "$output/$new_name"
-                echo "Renamed $file to $new_name"
+                
+                # Create the subdirectory based on the formatted date
+                mkdir -p "$output/the_economist/$formatted_date"
+
+                # Move files (EPUB, PDF, and cover image) to the subdirectory
+                mv "$file" "$output/the_economist/$formatted_date/$new_name"
+                echo "Renamed and moved $file to $output/the_economist/$formatted_date/$new_name"
+
+                # Move cover image to the subdirectory
+                if [ -f "$cover_image" ]; then
+                  mv "$cover_image" "$output/the_economist/$formatted_date/cover.jpg"
+                  echo "Moved cover image to $output/the_economist/$formatted_date/cover.jpg"
+                fi
               else
                 echo "Skipping file: $file (no valid date found)"
               fi
             fi
           done
-      - name: Push to magzines branch
-        if: ${{ success() }}
+
+      # Step 6: Push to 'magzines' branch
+      - name: Push to 'magzines' branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -109,10 +125,10 @@ jobs:
           git fetch origin magzines
           git checkout magzines
           mkdir -p the_economist
-          mv $output/* the_economist/
+          mv $output/the_economist/* the_economist/
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
-            git commit -m "Add new magzines"
+            git commit -m "Update The Economist"
             git push origin magzines
           else
             echo "No changes to push."
