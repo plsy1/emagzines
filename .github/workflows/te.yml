@@ -100,20 +100,20 @@ jobs:
               fi
             fi
           done
-      - name: Push to books branch
+      - name: Push to magzines branch
         if: ${{ success() }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin books
-          git checkout books
+          git fetch origin magzines
+          git checkout magzines
           mkdir -p the_economist
           mv $output/* the_economist/
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
-            git commit -m "Add new ebooks"
-            git push origin books
+            git commit -m "Add new magzines"
+            git push origin magzines
           else
             echo "No changes to push."
           fi
