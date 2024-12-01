@@ -106,9 +106,10 @@ jobs:
                 echo "Renamed and moved $file to $output/the_economist/$formatted_date/$new_name"
 
                 # Move cover image to the subdirectory
+                cover_image="${output}/cover.jpg"
                 if [ -f "$cover_image" ]; then
                   mv "$cover_image" "$output/the_economist/$formatted_date/cover.jpg"
-                  echo "Moved cover image to $output/the_economist/$formatted_date/cover.jpg"
+                  echo "Moved cover image $cover_image to $output/the_economist/$formatted_date/cover.jpg"
                 fi
               else
                 echo "Skipping file: $file (no valid date found)"
