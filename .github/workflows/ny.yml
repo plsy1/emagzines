@@ -27,8 +27,8 @@ jobs:
           sudo apt-get install libegl1 libopengl0 libxcb-cursor0
           url=https://download.calibre-ebook.com/linux-installer.sh
           sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+
       - name: Converting Ebook
-        if: ${{ success() }}
         run: |
           mkdir -p $output
           convert_ebook() {
@@ -36,36 +36,29 @@ jobs:
             recipe_path="${recipe_name}.recipe"
             echo "Converting \"$recipe_path\"..."
             ebook_name="${recipe_path%.*}"
-            
-            # EPUB
+
+            # Convert to EPUB
             epub_path="$ebook_name.epub"
             echo "Converting \"$recipe_path\" > \"$epub_path\"..."
-            arguments="--authors=\"$author\" --publisher=\"$publisher\""
-            cover="covers/${ebook_name}.png"
-            if [ -f "$cover" ]; then arguments+=" --cover=\"$cover\""; fi
-            style="styles/${ebook_name}.css"
-            if [ -f "$style" ]; then arguments+=" --extra-css=\"$style\""; fi
-            echo $arguments | xargs ebook-convert "$recipe_path" "$epub_path"
+            ebook-convert "$recipe_path" "$epub_path"
+
+            # Extract cover image
+            cover_image="${output}/cover.jpg"
+            ebook-meta "$epub_path" --get-cover="$cover_image"
+            echo "Cover extracted and saved to $cover_image"
+
+            # Rename EPUB
             title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
             new_epub_path="${output}/${title}.epub"
-            echo "Renaming \"$epub_path\" > \"$new_epub_path\""
             mv "$epub_path" "$new_epub_path"
-        
-            # EPUB -> PDF
+
+            # Convert to PDF
             epub_file="${output}/${title}.epub"
             pdf_path="${output}/${title}.pdf"
             echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
-            pdf_arguments="--authors=\"$author\" --publisher=\"$publisher\""
-            if [ -f "$cover" ]; then pdf_arguments+=" --cover=\"$cover\""; fi
-            if [ -f "$style" ]; then pdf_arguments+=" --extra-css=\"$style\""; fi
-            echo $pdf_arguments | xargs ebook-convert "$epub_file" "$pdf_path"
-
-            # Extract cover image
-            cover_image="cover/cover.jpg"
-            ebook-meta "$new_epub_path" --get-cover="$cover_image"
-            echo "Cover extracted and saved to $cover_image"
+            ebook-convert "$epub_file" "$pdf_path"
           }
-          
+
           convert_ebook
 
       - name: Format Files
