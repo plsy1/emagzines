@@ -95,6 +95,7 @@ jobs:
                 esac
 
                 formatted_date="${year}${month_num}$(printf "%02d" $day)"
+                echo "DATE=$formatted_date" >> $GITHUB_ENV
                 base_name=$(basename "$file" .${file##*.})
                 new_name="${formatted_date} - The Economist.${file##*.}"
                 
@@ -126,7 +127,14 @@ jobs:
           git fetch origin magzines
           git checkout magzines
           mkdir -p the_economist
-          mv $output/the_economist/* the_economist/
+          # Check if directory exists before moving files
+          if [ -d "the_economist/$DATE" ]; then
+            echo "Directory the_economist/$DATE already exists, skipping move."
+          else
+            mv $output/the_economist/$DATE the_economist/
+            echo "Moved $output/the_economist/$DATE to the_economist/"
+          fi
+          mv $output/the_economist/$DATE the_economist/
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
             git commit -m "Update The Economist"
