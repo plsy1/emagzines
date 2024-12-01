@@ -9,7 +9,7 @@ jobs:
   worker:
     runs-on: ubuntu-latest
     env:
-      output: /converted_ebooks
+      output: converted_ebooks
       publisher: plsy1.github.io
       author: y1
     steps:
@@ -61,7 +61,7 @@ jobs:
             echo $pdf_arguments | xargs ebook-convert "$epub_file" "$pdf_path"
 
             # Extract cover image
-            cover_image="/cover/cover.jpg"
+            cover_image="cover/cover.jpg"
             ebook-meta "$epub_path" --get-cover="$cover_image"
             echo "Cover extracted and saved to $cover_image"
           }

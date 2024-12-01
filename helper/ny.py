@@ -5,7 +5,7 @@ from datetime import datetime
 
 def books():
     # Loop through each file in the directory
-    books_dir = "/converted_ebooks"
+    books_dir = "converted_ebooks"
     date_str = ''
     for filename in os.listdir(books_dir):
         # Define the regular expression pattern to match the date in the format: dd MMM yyyy
@@ -40,7 +40,7 @@ def books():
 
 
 def cover(newDir):
-    cover_dir = "/cover"
+    cover_dir = "cover"
     old_file_path = os.path.join(cover_dir, "cover.jpg")
     new_file_path = os.path.join(newDir, "cover.jpg")
     os.rename(old_file_path, new_file_path)
