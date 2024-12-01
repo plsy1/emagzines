@@ -1,0 +1,92 @@
+name: TIME Magazine
+run-name: 'TIME Magazine: ${{ github.ref_name }}'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  worker:
+    runs-on: ubuntu-latest
+    env:
+      output: converted_ebooks
+      publisher: plsy1.github.io
+      author: y1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        if: ${{ success() }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Calibre
+        if: ${{ success() }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install libegl1 libopengl0 libxcb-cursor0
+          url=https://download.calibre-ebook.com/linux-installer.sh
+          sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+
+      - name: Converting Ebook
+        run: |
+          mkdir -p $output
+          convert_ebook() {
+            recipe_name="TIME Magazine"
+            recipe_path="${recipe_name}.recipe"
+            echo "Converting \"$recipe_path\"..."
+            ebook_name="${recipe_path%.*}"
+
+            # Convert to EPUB
+            epub_path="$ebook_name.epub"
+            echo "Converting \"$recipe_path\" > \"$epub_path\"..."
+            ebook-convert "$recipe_path" "$epub_path"
+
+            # Extract cover image
+            cover_image="${output}/cover.jpg"
+            ebook-meta "$epub_path" --get-cover="$cover_image"
+            echo "Cover extracted and saved to $cover_image"
+
+            # Rename EPUB
+            title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
+            new_epub_path="${output}/${title}.epub"
+            mv "$epub_path" "$new_epub_path"
+
+            # Convert to PDF
+            epub_file="${output}/${title}.epub"
+            pdf_path="${output}/${title}.pdf"
+            echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
+            ebook-convert "$epub_file" "$pdf_path"
+          }
+
+          convert_ebook
+
+      - name: Format Files
+        if: ${{ success() }}
+        run: |
+          python helper/tm.py
+
+      - name: Push to 'magzines' branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin magzines
+          git checkout magzines
+          mkdir -p time_magzine
+
+          if [ -d "time_magzine/$DATE" ]; then
+            echo "Directory time_magzine/$DATE already exists, stop."
+            exit 0
+          else
+            mv $output/$DATE time_magzine/
+            echo "Moved $output/$DATE to time_magzine/"
+          fi
+          git add time_magzine/*
+          if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
+            git commit -m "Update TIME Magazine"
+            git push origin magzines
+          else
+            echo "No changes to push."
+          fi
+        
