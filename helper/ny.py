@@ -3,11 +3,13 @@ import re
 from datetime import datetime
 
 
-def books():
+def move_books():
     # Loop through each file in the directory
     books_dir = "converted_ebooks"
     date_str = ''
     for filename in os.listdir(books_dir):
+        if filename == 'cover.jpg':
+            continue
         # Define the regular expression pattern to match the date in the format: dd MMM yyyy
         match = re.search(r"\[([A-Za-z]{3})\s(\d{2})\]", filename)
 
@@ -29,7 +31,8 @@ def books():
 
             # Construct the full paths for renaming
             old_file_path = os.path.join(books_dir, filename)
-            os.mkdir(f"{books_dir}/{date_str}")
+            if not os.path.exists(f"{books_dir}/{date_str}"):
+                os.mkdir(f"{books_dir}/{date_str}")
             new_file_path = os.path.join(f"{books_dir}/{date_str}", new_filename)
 
             # Rename the file
@@ -39,13 +42,13 @@ def books():
     return f"{books_dir}/{date_str}", date_str
 
 
-def cover(newDir):
+def move_cover(newDir):
     cover_dir = "cover"
     old_file_path = os.path.join(cover_dir, "cover.jpg")
     new_file_path = os.path.join(newDir, "cover.jpg")
     os.rename(old_file_path, new_file_path)
     print(f"Cover Renamed: {old_file_path} -> {new_file_path}")
 
-newDir,date = books()
-cover(newDir)
+newDir,date = move_books()
+move_cover(newDir)
 print(f"echo 'DATE={date}' >> $GITHUB_ENV")
