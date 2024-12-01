@@ -75,12 +75,12 @@ jobs:
           git checkout magzines
           mkdir -p the_new_yorker
 
-          if [ -d "the_new_yorker/${{ env.DATE }}" ]; then
-            echo "Directory the_new_yorker/${{ env.DATE }} already exists, stop."
+          if [ -d "the_new_yorker/$DATE" ]; then
+            echo "Directory the_new_yorker/$DATE already exists, stop."
             exit 0
           else
-            mv $output/${{ env.DATE }} the_new_yorker/
-            echo "Moved $output/${{ env.DATE }} to the_new_yorker/"
+            mv $output/$DATE the_new_yorker/
+            echo "Moved $output/$DATE to the_new_yorker/"
           fi
           git add the_new_yorker/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
