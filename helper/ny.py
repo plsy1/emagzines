@@ -1,5 +1,6 @@
 import os
 import re
+import subprocess
 from datetime import datetime
 
 books_dir = "converted_ebooks"
@@ -50,4 +51,4 @@ def move_cover(newDir):
 
 newDir,date = move_books()
 move_cover(newDir)
-print(f"echo 'DATE={date}' >> $GITHUB_ENV")
+subprocess.run(f"echo 'DATE={date}' >> $GITHUB_ENV", shell=True)
