@@ -24,6 +24,10 @@ def move_books():
             # Create a date string in the format yyyymmdd
             date_str = f"{year}{month:02d}{day}"
 
+            current_date = datetime.now()
+            new_date = current_date + timedelta(days=7)
+            date_str = new_date.strftime("%Y%m%d")
+
             # Get the file extension
             extension = os.path.splitext(filename)[1]
 
