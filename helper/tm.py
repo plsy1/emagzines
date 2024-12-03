@@ -22,7 +22,7 @@ def move_books():
             year = match.group(3)      
 
             # Create a date string in the format yyyymmdd
-            date_str = f"{year}{month:02d}{day}"
+            date_str = f"{year}{month:02d}{day:02d}"
 
             # Get the file extension
             extension = os.path.splitext(filename)[1]
