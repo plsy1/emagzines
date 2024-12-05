@@ -18,7 +18,7 @@ def move_books():
         if match:
             month_str = match.group(1)  
             month = datetime.strptime(month_str, "%B").month
-            day = match.group(2)        
+            day = int(match.group(2))        
             year = match.group(3)      
 
             # Create a date string in the format yyyymmdd
