@@ -5,7 +5,7 @@ import subprocess
 
 books_dir = "converted_ebooks"
 
-def move_books(books_dir):
+def move_books():
     date_str = ""
     for filename in os.listdir(books_dir):
         if filename == "cover.jpg":
