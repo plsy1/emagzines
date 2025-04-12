@@ -74,6 +74,12 @@ jobs:
         run: |
           python helper/te.py
 
+      - name: Upload output directory as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: output-artifact
+          path: $output
+
       - name: Push to 'magzines' branch
         run: |
           git config user.name "github-actions[bot]"
