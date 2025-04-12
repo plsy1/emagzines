@@ -69,56 +69,11 @@ jobs:
 
           convert_ebook
 
-      # Step 5: Rename files with formatted date and create subdirectory
-      - name: Rename Files and Create Subdirectory
+      - name: Format Files
+        if: ${{ success() }}
         run: |
-          for file in "$output"/*.{epub,pdf}; do
-            if [ -f "$file" ]; then
-              if [[ "$file" =~ \[([A-Za-z]+)\ ([0-9]{1,2})(st|nd|rd|th),?\ ([0-9]{4})\] ]]; then
-                month="${BASH_REMATCH[1]}"
-                day="${BASH_REMATCH[2]}"
-                year="${BASH_REMATCH[4]}"
-                case $month in
-                  Jan) month_num="01" ;;
-                  Feb) month_num="02" ;;
-                  Mar) month_num="03" ;;
-                  Apr) month_num="04" ;;
-                  May) month_num="05" ;;
-                  Jun) month_num="06" ;;
-                  Jul) month_num="07" ;;
-                  Aug) month_num="08" ;;
-                  Sep) month_num="09" ;;
-                  Oct) month_num="10" ;;
-                  Nov) month_num="11" ;;
-                  Dec) month_num="12" ;;
-                  *) month_num="01" ;;
-                esac
+          python helper/te.py
 
-                formatted_date="${year}${month_num}$(printf "%02d" $day)"
-                echo "DATE=$formatted_date" >> $GITHUB_ENV
-                base_name=$(basename "$file" .${file##*.})
-                new_name="${formatted_date} - The Economist.${file##*.}"
-                
-                # Create the subdirectory based on the formatted date
-                mkdir -p "$output/the_economist/$formatted_date"
-
-                # Move files (EPUB, PDF, and cover image) to the subdirectory
-                mv "$file" "$output/the_economist/$formatted_date/$new_name"
-                echo "Renamed and moved $file to $output/the_economist/$formatted_date/$new_name"
-
-                # Move cover image to the subdirectory
-                cover_image="${output}/cover.jpg"
-                if [ -f "$cover_image" ]; then
-                  mv "$cover_image" "$output/the_economist/$formatted_date/cover.jpg"
-                  echo "Moved cover image $cover_image to $output/the_economist/$formatted_date/cover.jpg"
-                fi
-              else
-                echo "Skipping file: $file (no valid date found)"
-              fi
-            fi
-          done
-
-      # Step 6: Push to 'magzines' branch
       - name: Push to 'magzines' branch
         run: |
           git config user.name "github-actions[bot]"
@@ -127,10 +82,11 @@ jobs:
           git fetch origin magzines
           git checkout magzines
           mkdir -p the_economist
-          # Check if directory exists before moving files
+
           if [ -d "the_economist/$DATE" ]; then
             echo "Directory the_economist/$DATE already exists, stop."
             exit 0
+            
           else
             mv $output/the_economist/$DATE the_economist/
             echo "Moved $output/the_economist/$DATE to the_economist/"
