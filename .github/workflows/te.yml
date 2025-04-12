@@ -86,15 +86,16 @@ jobs:
           if [ -d "the_economist/$DATE" ]; then
             echo "Directory the_economist/$DATE already exists, stop."
             exit 0
-            
           else
-            mv $output/the_economist/$DATE the_economist/
-            echo "Moved $output/the_economist/$DATE to the_economist/"
+            mv $output/$DATE the_economist/
+            echo "Moved $output/$DATE to the_economist/"
           fi
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
-            git commit -m "Update The Economist"
+            git commit -m "Update TIME Magazine"
             git push origin magzines
           else
             echo "No changes to push."
           fi
+        
+
