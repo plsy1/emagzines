@@ -64,7 +64,7 @@ jobs:
           convert_ebook
 
       - name: Upload output directory as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: output-artifact
           path: $output
