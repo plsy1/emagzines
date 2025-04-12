@@ -69,16 +69,16 @@ jobs:
 
           convert_ebook
 
-      - name: Format Files
-        if: ${{ success() }}
-        run: |
-          python helper/te.py
-
       - name: Upload output directory as artifact
         uses: actions/upload-artifact@v3
         with:
           name: output-artifact
           path: $output
+
+      - name: Format Files
+        if: ${{ success() }}
+        run: |
+          python helper/te.py
 
       - name: Push to 'magzines' branch
         run: |
