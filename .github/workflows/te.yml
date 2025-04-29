@@ -91,8 +91,8 @@ jobs:
             echo "Directory the_economist/$DATE already exists, stop."
             exit 0
           else
-            mv $output/$DATE the_economist/
-            echo "Moved $output/$DATE to the_economist/"
+            mv $output the_economist/$DATE
+            echo "Moved $output to the_economist/$DATE"
           fi
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
