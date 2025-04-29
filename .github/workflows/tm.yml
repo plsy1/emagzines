@@ -52,12 +52,14 @@ jobs:
             date=$(echo "$convert_output" | grep -oP 'TIM\K\d{6}')
             title="20${date}"
             echo "DATE=$title" >> $GITHUB_ENV
-            new_epub_path="${output}/${title}.epub"
+            book_name="$title - TIME Magazine"
+            
+            new_epub_path="${output}/${book_name}.epub"
             mv "$epub_path" "$new_epub_path"
 
             # Convert to PDF
-            epub_file="${output}/${title}.epub"
-            pdf_path="${output}/${title}.pdf"
+            epub_file="${output}/${book_name}.epub"
+            pdf_path="${output}/${book_name}.pdf"
             echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
             ebook-convert "$epub_file" "$pdf_path"
           }
@@ -83,8 +85,8 @@ jobs:
             echo "Directory time_magzine/$DATE already exists, stop."
             exit 0
           else
-            mv $output/$DATE time_magzine/
-            echo "Moved $output/$DATE to time_magzine/"
+            mv $output/ time_magzine/$DATE
+            echo "Moved $output to time_magzine/$DATE"
           fi
           git add time_magzine/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
