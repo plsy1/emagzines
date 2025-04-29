@@ -49,7 +49,7 @@ jobs:
 
             # Rename EPUB
             # title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
-            date=$(echo "$url" | grep -oP 'TIM\K\d{6}')
+            date=$(echo "$convert_output" | grep -oP 'TIM\K\d{6}')
             title="20${date}"
             export DATE="$title"
             new_epub_path="${output}/${title}.epub"
