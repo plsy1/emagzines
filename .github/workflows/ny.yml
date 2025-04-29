@@ -51,7 +51,7 @@ jobs:
 
             # Rename EPUB
             #title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
-            title=$(echo "$convert_output" | grep -oP 'magazine/\K\d{4}_\d{2}_\d{2}' | sed 's/_//g')
+            title=$(echo "$convert_output" | grep -oP 'magazine/\K\d{4} \d{2} \d{2}' | sed 's/ //g')
             echo "DATE=$title" >> $GITHUB_ENV
             
             new_epub_path="${output}/${title}.epub"
@@ -86,8 +86,8 @@ jobs:
             echo "Directory the_new_yorker/$DATE already exists, stop."
             exit 0
           else
-            mv $output/$DATE the_new_yorker/
-            echo "Moved $output/$DATE to the_new_yorker/"
+            mv $output the_new_yorker/$DATE
+            echo "Moved $output to the_new_yorker/$DATE"
           fi
           git add the_new_yorker/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
