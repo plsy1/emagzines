@@ -48,7 +48,7 @@ jobs:
             echo "Cover extracted and saved to $cover_image"
 
             # Rename EPUB
-            title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
+            title=$(ebook-meta "$epub_path" | grep '^Published *:' | sed 's/^Published *: *\([0-9]\{4\}\)-\([0-9]\{2\}\)-\([0-9]\{2\}\).*/\1\2\3/')
             new_epub_path="${output}/${title}.epub"
             mv "$epub_path" "$new_epub_path"
 
@@ -67,11 +67,6 @@ jobs:
           name: output-artifact
           path: converted_ebooks
 
-      - name: Format Files
-        if: ${{ success() }}
-        run: |
-          python helper/tm.py
-
       - name: Push to 'magzines' branch
         run: |
           git config user.name "github-actions[bot]"
@@ -81,12 +76,12 @@ jobs:
           git checkout magzines
           mkdir -p time_magzine
 
-          if [ -d "time_magzine/$DATE" ]; then
-            echo "Directory time_magzine/$DATE already exists, stop."
+          if [ -d "time_magzine/$title" ]; then
+            echo "Directory time_magzine/$title already exists, stop."
             exit 0
           else
-            mv $output/$DATE time_magzine/
-            echo "Moved $output/$DATE to time_magzine/"
+            mv $output/$title time_magzine/
+            echo "Moved $output/$title to time_magzine/"
           fi
           git add time_magzine/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
