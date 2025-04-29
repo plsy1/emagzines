@@ -48,7 +48,7 @@ jobs:
             # Convert to EPUB
             epub_path="$ebook_name.epub"
             echo "Converting \"$recipe_path\" > \"$epub_path\"..."
-            ebook-convert "$recipe_path" "$epub_path"
+            convert_output=$(ebook-convert "$recipe_path" "$epub_path")
 
             # Extract cover image
             cover_image="${output}/cover.jpg"
@@ -56,7 +56,10 @@ jobs:
             echo "Cover extracted and saved to $cover_image"
 
             # Rename EPUB
-            title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
+            #title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
+            title=$(echo "$convert_output" | grep -oP 'images/\K\d{8}' | head -n 1)
+            echo "DATE=$title" >> $GITHUB_ENV
+            
             new_epub_path="${output}/${title}.epub"
             mv "$epub_path" "$new_epub_path"
 
@@ -72,13 +75,8 @@ jobs:
       - name: Upload output directory as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output-artifact
+          name: ${{ env.DATE }}
           path: converted_ebooks
-
-      - name: Format Files
-        if: ${{ success() }}
-        run: |
-          python helper/te.py
 
       - name: Push to 'magzines' branch
         run: |
