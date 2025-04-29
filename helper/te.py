@@ -39,7 +39,7 @@ def move_books():
         os.rename(old_file_path, new_file_path)
         print(f"Book Renamed: {filename} -> {new_filename}")
 
-        return f"{books_dir}/{date_str}", date_str
+    return f"{books_dir}/{date_str}", date_str
 
 
 def move_cover(newDir):
