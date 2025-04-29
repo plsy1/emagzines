@@ -53,13 +53,15 @@ jobs:
             #title=$(ebook-meta "$epub_path" | grep '^Title *:' | sed 's/^Title *: *\(.*\)/\1/')
             title=$(echo "$convert_output" | grep -oP 'magazine/\K\d{4}/\d{2}/\d{2}' | head -n1 | sed 's#/#\n#g' | tr -d '\n')
             echo "DATE=$title" >> $GITHUB_ENV
+
+            book_name="$title - The New Yorker Magazine"
             
-            new_epub_path="${output}/${title}.epub"
+            new_epub_path="${output}/${book_name}.epub"
             mv "$epub_path" "$new_epub_path"
 
             # Convert to PDF
-            epub_file="${output}/${title}.epub"
-            pdf_path="${output}/${title}.pdf"
+            epub_file="${output}/${book_name}.epub"
+            pdf_path="${output}/${book_name}.pdf"
             echo "Converting \"$epub_file\" to PDF > \"$pdf_path\"..."
             ebook-convert "$epub_file" "$pdf_path"
           }
