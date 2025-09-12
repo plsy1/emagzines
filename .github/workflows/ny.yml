@@ -4,9 +4,7 @@ run-name: 'The New Yorker Magazine: ${{ github.ref_name }}'
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * 1'
-    - cron: '0 12 * * 1'
-    - cron: '0 18 * * 1'
+    - cron: '0 0 * * *'
 jobs:
   worker:
     runs-on: ubuntu-latest
