@@ -31,6 +31,7 @@ jobs:
           sudo apt-get install libegl1 libopengl0 libxcb-cursor0
           url=https://download.calibre-ebook.com/linux-installer.sh
           sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+          wget -O "1.recipe" https://raw.githubusercontent.com/kovidgoyal/calibre/refs/heads/master/recipes/economist.recipe
 
       # Step 4: Convert Ebook
       - name: Converting Ebook
@@ -38,13 +39,11 @@ jobs:
           mkdir -p $output
           convert_ebook() {
             recipe_name="The Economist"
-            recipe_path="${recipe_name}.recipe"
-            echo "Converting \"$recipe_path\"..."
+            recipe_path="1.recipe"
             ebook_name="${recipe_path%.*}"
 
             # Convert to EPUB
             epub_path="$ebook_name.epub"
-            echo "Converting \"$recipe_path\" > \"$epub_path\"..."
             convert_output=$(ebook-convert "$recipe_path" "$epub_path" 2>&1 | tee convert.log)
 
             # Extract cover image
