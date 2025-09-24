@@ -45,7 +45,7 @@ jobs:
             # Convert to EPUB
             epub_path="$ebook_name.epub"
             echo "Converting \"$recipe_path\" > \"$epub_path\"..."
-            convert_output=$(ebook-convert "$recipe_path" "$epub_path")
+            convert_output=$(ebook-convert "$recipe_path" "$epub_path" 2>&1 | tee convert.log)
 
             # Extract cover image
             cover_image="${output}/cover.jpg"
@@ -86,7 +86,7 @@ jobs:
           git checkout magzines
           mkdir -p the_economist
 
-          mv $output the_economist/$DATE
+          mv "$output"/* "the_economist/$DATE/"
           echo "Moved $output to the_economist/$DATE"
           
           git add the_economist/*
