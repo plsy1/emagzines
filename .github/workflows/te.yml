@@ -86,13 +86,9 @@ jobs:
           git checkout magzines
           mkdir -p the_economist
 
-          if [ -d "the_economist/$DATE" ]; then
-            echo "Directory the_economist/$DATE already exists, stop."
-            exit 0
-          else
-            mv $output the_economist/$DATE
-            echo "Moved $output to the_economist/$DATE"
-          fi
+          mv $output the_economist/$DATE
+          echo "Moved $output to the_economist/$DATE"
+          
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
             git commit -m "Update The Economist"
