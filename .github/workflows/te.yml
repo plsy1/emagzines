@@ -31,7 +31,6 @@ jobs:
           sudo apt-get install libegl1 libopengl0 libxcb-cursor0
           url=https://download.calibre-ebook.com/linux-installer.sh
           sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
-          wget -O "1.recipe" https://raw.githubusercontent.com/kovidgoyal/calibre/refs/heads/master/recipes/economist.recipe
 
       # Step 4: Convert Ebook
       - name: Converting Ebook
@@ -41,12 +40,12 @@ jobs:
             recipe_name="The Economist"
             recipe_path="${recipe_name}.recipe"
             echo "Converting \"$recipe_path\"..."
-            local_recipe_path="1.recipe"
             ebook_name="${recipe_path%.*}"
 
             # Convert to EPUB
             epub_path="$ebook_name.epub"
-            convert_output=$(ebook-convert "$local_recipe_path" "$epub_path" 2>&1 | tee convert.log)
+            echo "Converting \"$recipe_path\" > \"$epub_path\"..."
+            convert_output=$(ebook-convert "$recipe_path" "$epub_path")
 
             # Extract cover image
             cover_image="${output}/cover.jpg"
@@ -76,9 +75,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.DATE }}
-          path: |
-            converted_ebooks
-            convert.log
+          path: converted_ebooks
+
       - name: Push to 'magzines' branch
         run: |
           git config user.name "plsy1"
@@ -87,7 +85,7 @@ jobs:
           git fetch origin magzines
           git checkout magzines
           mkdir -p the_economist
-          
+
           if [ -d "the_economist/$DATE" ]; then
             echo "Directory the_economist/$DATE already exists, stop."
             exit 0
@@ -95,7 +93,6 @@ jobs:
             mv $output the_economist/$DATE
             echo "Moved $output to the_economist/$DATE"
           fi
-          
           git add the_economist/*
           if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
             git commit -m "Update The Economist"
@@ -104,4 +101,3 @@ jobs:
             echo "No changes to push."
           fi
         
-
