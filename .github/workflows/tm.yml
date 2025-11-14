@@ -41,6 +41,7 @@ jobs:
             epub_path="$ebook_name.epub"
             echo "Converting \"$recipe_path\" > \"$epub_path\"..."
             convert_output=$(ebook-convert "$recipe_path" "$epub_path")
+            echo "$convert_output"
             
             # Extract cover image
             cover_image="${output}/cover.jpg"
