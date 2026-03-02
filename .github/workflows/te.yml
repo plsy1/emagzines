@@ -37,7 +37,7 @@ jobs:
         run: |
           mkdir -p $output
           convert_ebook() {
-            recipe_name="The Economist"
+            recipe_name="economist"
             recipe_path="${recipe_name}.recipe"
             echo "Converting \"$recipe_path\"..."
             ebook_name="${recipe_path%.*}"
