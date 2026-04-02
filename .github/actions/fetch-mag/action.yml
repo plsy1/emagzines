@@ -52,18 +52,20 @@ runs:
         git config user.name "plsy1"
         git config user.email "plsy1@users.noreply.github.com"
         
-        git fetch origin magzines
-        git checkout magzines
+        # 在子文件夹克隆 magzines 分支，避免原地 checkout 导致 action 文件丢失
+        git clone --branch magzines --depth 1 https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
         
-        mkdir -p ${{ env.MAG_FOLDER }}
+        mkdir -p repo_magzines/${{ env.MAG_FOLDER }}
         
-        if [ -d "${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
-          echo "Directory ${{ env.MAG_FOLDER }}/${{ env.DATE }} already exists, stopping."
+        if [ -d "repo_magzines/${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
+          echo "Directory ${{ env.MAG_FOLDER }}/${{ env.DATE }} already exists, skipping push."
           exit 0
         fi
         
-        mv converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/${{ env.DATE }}
-        git add ${{ env.MAG_FOLDER }}/*
+        mv converted_ebooks/${{ env.DATE }} repo_magzines/${{ env.MAG_FOLDER }}/${{ env.DATE }}
+        
+        cd repo_magzines
+        git add .
         
         if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
           git commit -m "Update ${{ inputs.mag_name }} - ${{ env.DATE }}"
