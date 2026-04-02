@@ -1,0 +1,73 @@
+name: 'Fetch and Process Magazine'
+description: 'Install Calibre, run Python script, and push results'
+inputs:
+  mag_id:
+    description: 'Magazine ID (ny, te, tm)'
+    required: true
+  mag_name:
+    description: 'Magazine Name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install Calibre
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libegl1 \
+          libopengl0 \
+          libxcb-cursor0 \
+          libnss3 \
+          libxcomposite1 \
+          libxrandr2 \
+          libxtst6 \
+          libxkbcommon0 \
+          libgbm1 \
+          libfontconfig1 \
+          libgl1 \
+          wget
+        url=https://download.calibre-ebook.com/linux-installer.sh
+        sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
+
+    - name: Run Processing Script
+      shell: bash
+      run: python helper/main.py ${{ inputs.mag_id }}
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.DATE }}-${{ inputs.mag_id }}
+        path: converted_ebooks
+
+    - name: Push to 'magzines' branch
+      shell: bash
+      run: |
+        git config user.name "plsy1"
+        git config user.email "plsy1@users.noreply.github.com"
+        
+        git fetch origin magzines
+        git checkout magzines
+        
+        mkdir -p ${{ env.MAG_FOLDER }}
+        
+        if [ -d "${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
+          echo "Directory ${{ env.MAG_FOLDER }}/${{ env.DATE }} already exists, stopping."
+          exit 0
+        fi
+        
+        mv converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/${{ env.DATE }}
+        git add ${{ env.MAG_FOLDER }}/*
+        
+        if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
+          git commit -m "Update ${{ inputs.mag_name }} - ${{ env.DATE }}"
+          git push origin magzines
+        else
+          echo "No changes to push."
+        fi
