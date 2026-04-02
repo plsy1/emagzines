@@ -72,8 +72,12 @@ def extract_date_from_file(filename):
 
 def run_command(args):
     print(f"Running: {' '.join(args)}")
+    # 创建环境变量副本，设置无头模式，避免 Qt 渲染报错
+    env = os.environ.copy()
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    
     # 改用 Popen 实现流式输出日志，防止长时间卡顿
-    process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
     full_output = []
     if process.stdout:
         for line in process.stdout:
