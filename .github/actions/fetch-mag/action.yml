@@ -57,19 +57,24 @@ runs:
         git config user.name "plsy1"
         git config user.email "plsy1@users.noreply.github.com"
         
-        # 在子文件夹克隆 magzines 分支，使用 --filter=blob:none 忽略文件内容，避免下载大量 PDF
-        git clone --filter=blob:none --branch magzines --single-branch --depth 1 https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
+        # 使用 --sparse 和 --filter=blob:none 组合，实现极轻量克隆
+        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
         
-        mkdir -p repo_magzines/${{ env.MAG_FOLDER }}
+        cd repo_magzines
         
-        if [ -d "repo_magzines/${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
+        # 只针对当前杂志目录进行稀疏检出
+        git sparse-checkout set ${{ env.MAG_FOLDER }}
+        
+        mkdir -p ${{ env.MAG_FOLDER }}
+        
+        if [ -d "${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
           echo "Directory ${{ env.MAG_FOLDER }}/${{ env.DATE }} already exists, skipping push."
           exit 0
         fi
         
-        mv converted_ebooks/${{ env.DATE }} repo_magzines/${{ env.MAG_FOLDER }}/${{ env.DATE }}
+        # 将生成的书籍移入
+        mv ../converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/${{ env.DATE }}
         
-        cd repo_magzines
         git add .
         
         if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
