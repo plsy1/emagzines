@@ -32,7 +32,12 @@ runs:
           libgbm1 \
           libfontconfig1 \
           libgl1 \
-          wget
+          libpulse0 \
+          libxrender1 \
+          libdbus-1-3 \
+          wget && \
+        (sudo apt-get install -y libasound2 || sudo apt-get install -y libasound2t64)
+        
         url=https://download.calibre-ebook.com/linux-installer.sh
         sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
 
@@ -52,8 +57,8 @@ runs:
         git config user.name "plsy1"
         git config user.email "plsy1@users.noreply.github.com"
         
-        # 在子文件夹克隆 magzines 分支，避免原地 checkout 导致 action 文件丢失
-        git clone --branch magzines --depth 1 https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
+        # 在子文件夹克隆 magzines 分支，使用 --filter=blob:none 忽略文件内容，避免下载大量 PDF
+        git clone --filter=blob:none --branch magzines --single-branch --depth 1 https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
         
         mkdir -p repo_magzines/${{ env.MAG_FOLDER }}
         

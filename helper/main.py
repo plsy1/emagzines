@@ -72,10 +72,15 @@ def extract_date_from_file(filename):
 
 def run_command(args):
     print(f"Running: {' '.join(args)}")
-    result = subprocess.run(args, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"Error: {result.stderr}")
-    return result.stdout, result.returncode
+    # 改用 Popen 实现流式输出日志，防止长时间卡顿
+    process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    full_output = []
+    if process.stdout:
+        for line in process.stdout:
+            print(line, end="") # 实时流式输出
+            full_output.append(line)
+    process.wait()
+    return "".join(full_output), process.returncode
 
 def main():
     if len(sys.argv) < 2:
