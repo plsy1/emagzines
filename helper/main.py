@@ -75,6 +75,8 @@ def run_command(args):
     # 创建环境变量副本，设置无头模式，避免 Qt 渲染报错
     env = os.environ.copy()
     env["QT_QPA_PLATFORM"] = "offscreen"
+    # 核心：禁用 QtWebEngine 的沙箱，允许以 root 权限在 Docker 里抓取
+    env["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
     
     # 改用 Popen 实现流式输出日志，防止长时间卡顿
     process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
