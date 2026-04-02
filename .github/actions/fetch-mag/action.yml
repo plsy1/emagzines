@@ -46,6 +46,7 @@ runs:
       run: python helper/main.py ${{ inputs.mag_id }}
 
     - name: Upload Artifact
+      if: env.ACT != 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.DATE }}-${{ inputs.mag_id }}
@@ -54,13 +55,17 @@ runs:
     - name: Push to 'magzines' branch
       shell: bash
       run: |
-        git config user.name "plsy1"
-        git config user.email "plsy1@users.noreply.github.com"
+        # 针对 --reuse 模式做清理，如果目录已存在则先删除
+        rm -rf repo_magzines
         
         # 使用 --sparse 和 --filter=blob:none 组合，实现极轻量克隆
         git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
         
         cd repo_magzines
+        
+        # 必须先进入子仓库后再设置 identity，否则 git commit 会报错不知身份
+        git config user.name "plsy1"
+        git config user.email "plsy1@users.noreply.github.com"
         
         # 只针对当前杂志目录进行稀疏检出
         git sparse-checkout set ${{ env.MAG_FOLDER }}

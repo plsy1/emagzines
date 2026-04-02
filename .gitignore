@@ -1,0 +1,25 @@
+# 系统与 IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Python 环境
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+# 电子书生成与本地缓存
+converted_ebooks/
+local_data_sync/
+temp_output.epub
+*.pdf
+*.epub
+
+# Act 与本地认证
+.secrets
+.actcache/
+.actrc
+
+# 其他工具产物
+*.log
