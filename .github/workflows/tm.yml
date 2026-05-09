@@ -23,4 +23,5 @@ jobs:
           mag_id: tm
           mag_name: "TIME Magazine"
           issue_date: ${{ github.event.inputs.issue_url }}
+          github_token: ${{ secrets.GITHUB_TOKEN || github.token }}
 

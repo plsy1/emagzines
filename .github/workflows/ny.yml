@@ -23,4 +23,5 @@ jobs:
           mag_id: ny
           mag_name: "The New Yorker Magazine"
           issue_date: ${{ github.event.inputs.issue_date }}
+          github_token: ${{ secrets.GITHUB_TOKEN || github.token }}
 
