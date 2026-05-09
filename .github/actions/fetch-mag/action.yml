@@ -71,7 +71,7 @@ runs:
         rm -rf repo_magzines
         
         # 使用 --sparse 和 --filter=blob:none 组合，实现极轻量克隆
-        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://${{ inputs.github_token }}@github.com/${{ github.repository }}.git repo_magzines
+        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://x-access-token:${{ inputs.github_token }}@github.com/${{ github.repository }}.git repo_magzines
         
         cd repo_magzines
         
