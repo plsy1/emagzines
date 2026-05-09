@@ -31,17 +31,14 @@ if [ ! -f ".github/workflows/${MAG_ID}.yml" ]; then
     exit 1
 fi
 
-echo "--- 正在通过 act 并在本地网络下抓取 $MAG_ID ---"
-[ -n "$ISSUE_DATE" ] && echo "指定日期: $ISSUE_DATE"
-
-# 构建 act 命令
-ACT_CMD="act workflow_dispatch -W .github/workflows/${MAG_ID}.yml -s GITHUB_TOKEN=$TOKEN"
-
-# 如果指定了日期，通过 --input 传入
+# 调用 act 运行指定的工作流
 if [ -n "$ISSUE_DATE" ]; then
-    ACT_CMD="$ACT_CMD --input issue_date=$ISSUE_DATE"
+    act workflow_dispatch -W ".github/workflows/${MAG_ID}.yml" \
+      -s GITHUB_TOKEN="$TOKEN" \
+      --input issue_date="$ISSUE_DATE"
+else
+    act workflow_dispatch -W ".github/workflows/${MAG_ID}.yml" \
+      -s GITHUB_TOKEN="$TOKEN"
 fi
-
-eval $ACT_CMD
 
 echo "--- 抓取及同步流程已在容器内完成！ ---"

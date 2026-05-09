@@ -4,8 +4,8 @@ run-name: 'TIME Magazine: ${{ github.ref_name }}'
 on:
   workflow_dispatch:
     inputs:
-      issue_url:
-        description: 'Issue URL (Optional, for old issues)'
+      issue_date:
+        description: 'Issue Date or URL (Optional, for old issues)'
         required: false
   schedule:
     - cron: '0 0 * * *'
@@ -22,6 +22,6 @@ jobs:
         with:
           mag_id: tm
           mag_name: "TIME Magazine"
-          issue_date: ${{ github.event.inputs.issue_url }}
+          issue_date: ${{ github.event.inputs.issue_date }}
           github_token: ${{ secrets.GITHUB_TOKEN || github.token }}
 
