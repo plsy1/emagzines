@@ -9,7 +9,7 @@
 
 ---
 
-### 🚀 如何使用与手动抓取
+### 使用说明
 
 如果你想拥有自己的抓取副本，请先 **Fork** 本仓库。
 
@@ -42,3 +42,13 @@ chmod +x run_local.sh
 ```
 
 > **提示**：建议在本地创建 `.secrets` 文件并填写 `GITHUB_TOKEN=你的Token`，这样运行脚本时无需重复输入 Token。
+
+---
+
+### 技术栈
+
+本项目基于以下技术构建：
+
+- **核心引擎**：[Calibre](https://calibre-ebook.com/) - 强大的电子书管理与转换工具，利用其内置的 Recipe 系统进行网页抓取。
+- **自动化**：[GitHub Actions](https://github.com/features/actions) - 实现每日定时自动抓取与推送。
+- **网络优化**：集成 [Cloudflare WARP](https://github.com/fscarmen/warp-on-actions) 以优化抓取时的网络环境。
