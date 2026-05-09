@@ -3,6 +3,10 @@ run-name: "The Economist: ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
+    inputs:
+      issue_date:
+        description: 'Issue Date (YYYY-MM-DD)'
+        required: false
   schedule:
     - cron: '0 22 * * *'
 
@@ -18,4 +22,5 @@ jobs:
         with:
           mag_id: te
           mag_name: "The Economist"
+          issue_date: ${{ github.event.inputs.issue_date }}
 

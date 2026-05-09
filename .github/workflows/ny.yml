@@ -3,6 +3,10 @@ run-name: 'The New Yorker Magazine: ${{ github.ref_name }}'
 
 on:
   workflow_dispatch:
+    inputs:
+      issue_date:
+        description: 'Issue Date (YYYY-MM-DD)'
+        required: false
   schedule:
     - cron: '0 1 * * *'
 
@@ -18,4 +22,5 @@ jobs:
         with:
           mag_id: ny
           mag_name: "The New Yorker Magazine"
+          issue_date: ${{ github.event.inputs.issue_date }}
 

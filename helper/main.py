@@ -29,6 +29,13 @@ MAGZINES = {
     }
 }
 
+# 针对不同杂志的特殊参数映射
+RECIPE_OPTIONS = {
+    "te": "date",
+    "ny": "date",
+    "tm": "edition",
+}
+
 BOOKS_DIR = "converted_ebooks"
 
 def extract_date_from_output(output, mag_id):
@@ -98,6 +105,40 @@ def main():
         print(f"Unknown magazine: {mag_id}")
         sys.exit(1)
 
+    issue_date = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] and sys.argv[2] != "." else None
+
+    # 特殊逻辑：自动将日期对齐到杂志的出版日
+    if (mag_id == "te" or mag_id == "ny") and issue_date:
+        try:
+            from datetime import datetime, timedelta
+            # 兼容 YYYY-MM-DD, YYYYMMDD, YYYY/MM/DD
+            clean_date = issue_date.replace("-", "").replace("/", "")
+            dt_obj = datetime.strptime(clean_date, "%Y%m%d")
+            
+            # 对齐逻辑
+            if mag_id == "te":
+                # 经济学人：对齐到周六 (5)
+                offset = (dt_obj.weekday() + 2) % 7
+                target_fmt = "%Y-%m-%d"
+                day_name = "Saturday"
+            else:
+                # 纽约客：对齐到周一 (0)
+                offset = dt_obj.weekday()
+                target_fmt = "%Y/%m/%d"
+                day_name = "Monday"
+
+            if offset > 0:
+                dt_obj = dt_obj - timedelta(days=offset)
+                old_date = issue_date
+                issue_date = dt_obj.strftime(target_fmt)
+                print(f"Adjusted date for {mag_id}: {old_date} -> {issue_date} ({day_name})")
+            else:
+                # 即使没偏移，也统一一下格式
+                issue_date = dt_obj.strftime(target_fmt)
+                
+        except Exception as e:
+            print(f"Warning: Failed to auto-adjust date: {e}")
+
     config = MAGZINES[mag_id]
     recipe = config["recipe"]
     
@@ -114,7 +155,17 @@ def main():
     # 1. 运行转换
     print(f"--- Fetching {config['name']} ---")
     raw_epub = "temp_output.epub"
-    convert_output, code = run_command(["ebook-convert", f"{recipe}.recipe", raw_epub])
+    
+    convert_args = ["ebook-convert", f"{recipe}.recipe", raw_epub]
+    
+    # 如果指定了日期，则尝试通过 --recipe-specific-option 传入
+    if issue_date:
+        opt_name = RECIPE_OPTIONS.get(mag_id, "date")
+        # 格式为 --recipe-specific-option=name:value
+        convert_args.append(f"--recipe-specific-option={opt_name}:{issue_date}")
+        print(f"Using recipe option: {opt_name}:{issue_date}")
+
+    convert_output, code = run_command(convert_args)
     
     if code != 0 or not os.path.exists(raw_epub):
         print("Conversion failed.")
@@ -122,9 +173,16 @@ def main():
 
     # 2. 确定日期
     date_str = extract_date_from_output(convert_output, mag_id)
+        
     if not date_str:
         # 尝试从文件名/元数据提取
         date_str = extract_date_from_file(raw_epub)
+
+    # 如果提取不到，且用户手动指定了日期，则使用手动指定的日期（备选）
+    if not date_str and issue_date:
+        # 去掉横杠，例如 2024-05-04 -> 20240504
+        date_str = issue_date.replace("-", "")
+        print(f"Extraction failed, using specified date as fallback: {date_str}")
     
     if not date_str:
         # 最后兜底使用当前日期

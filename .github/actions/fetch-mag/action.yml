@@ -7,6 +7,9 @@ inputs:
   mag_name:
     description: 'Magazine Name'
     required: true
+  issue_date:
+    description: 'Issue Date (YYYY-MM-DD)'
+    required: false
 
 runs:
   using: "composite"
@@ -49,7 +52,7 @@ runs:
 
     - name: Run Processing Script
       shell: bash
-      run: python helper/main.py ${{ inputs.mag_id }}
+      run: python helper/main.py ${{ inputs.mag_id }} "${{ inputs.issue_date }}"
 
     - name: Upload Artifact
       if: env.ACT != 'true'
@@ -65,7 +68,7 @@ runs:
         rm -rf repo_magzines
         
         # 使用 --sparse 和 --filter=blob:none 组合，实现极轻量克隆
-        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git repo_magzines
+        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://${{ secrets.GITHUB_TOKEN || github.token }}@github.com/${{ github.repository }}.git repo_magzines
         
         cd repo_magzines
         
