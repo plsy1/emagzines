@@ -104,6 +104,13 @@ def main():
     if not os.path.exists(BOOKS_DIR):
         os.makedirs(BOOKS_DIR)
 
+    # 0. 检查当前 IP (用于调试是否有代理生效)
+    try:
+        ip_info = subprocess.check_output(["curl", "-s", "https://ifconfig.me"], text=True).strip()
+        print(f"Current Public IP: {ip_info}")
+    except:
+        pass
+
     # 1. 运行转换
     print(f"--- Fetching {config['name']} ---")
     raw_epub = "temp_output.epub"

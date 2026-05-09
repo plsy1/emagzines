@@ -41,6 +41,12 @@ runs:
         url=https://download.calibre-ebook.com/linux-installer.sh
         sudo -v && wget -nv -O- $url | sudo sh /dev/stdin
 
+    - name: Setup WARP
+      if: env.ACT != 'true'
+      uses: fscarmen/warp-on-actions@v1.1
+      with:
+        stack: dual
+
     - name: Run Processing Script
       shell: bash
       run: python helper/main.py ${{ inputs.mag_id }}
