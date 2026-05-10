@@ -79,18 +79,19 @@ runs:
         git config user.name "plsy1"
         git config user.email "plsy1@users.noreply.github.com"
         
-        # 只针对当前杂志目录进行稀疏检出
-        git sparse-checkout set ${{ env.MAG_FOLDER }}
+        # 只针对当前杂志目录下的年份目录进行稀疏检出
+        YEAR=$(echo ${{ env.DATE }} | cut -c 1-4)
+        git sparse-checkout set ${{ env.MAG_FOLDER }}/$YEAR
         
-        mkdir -p ${{ env.MAG_FOLDER }}
+        mkdir -p ${{ env.MAG_FOLDER }}/$YEAR
         
-        if [ -d "${{ env.MAG_FOLDER }}/${{ env.DATE }}" ]; then
-          echo "Directory ${{ env.MAG_FOLDER }}/${{ env.DATE }} already exists, skipping push."
+        if [ -d "${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }}" ]; then
+          echo "Directory ${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }} already exists, skipping push."
           exit 0
         fi
         
         # 将生成的书籍移入
-        mv ../converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/${{ env.DATE }}
+        mv ../converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }}
         
         git add .
         

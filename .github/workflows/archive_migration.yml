@@ -1,0 +1,38 @@
+name: Archive Migration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          path: main_repo
+
+      - name: Checkout magzines branch
+        shell: bash
+        run: |
+          git clone --filter=blob:none --branch magzines --single-branch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git mag_repo
+
+      - name: Run Archive Script
+        shell: bash
+        run: |
+          cd mag_repo
+          python3 ../main_repo/helper/archive.py
+
+      - name: Commit and Push
+        shell: bash
+        run: |
+          cd mag_repo
+          git config user.name "plsy1"
+          git config user.email "plsy1@users.noreply.github.com"
+          git add .
+          if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
+            git commit -m "Archive existing magazines by year"
+            git push origin magzines
+          else
+            echo "No changes to archive."
+          fi
