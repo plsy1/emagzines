@@ -104,3 +104,22 @@ runs:
             --title "$TITLE" \
             --notes "Automatically generated ${{ inputs.mag_name }} issue for ${{ env.DATE }}."
         fi
+
+    - name: Update magazine index
+      if: env.ACT != 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        set -euo pipefail
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git pull --rebase origin "${{ github.ref_name }}"
+        python helper/generate_index.py "${{ github.repository }}" INDEX.md
+        git add INDEX.md
+        if git diff --cached --quiet; then
+          echo "Magazine index is already up to date."
+        else
+          git commit -m "docs: update magazine release index"
+          git push origin "HEAD:${{ github.ref_name }}"
+        fi

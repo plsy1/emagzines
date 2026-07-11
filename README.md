@@ -7,7 +7,7 @@
 
 #### ⏳ **时代杂志 (TIME Magazine)**
 
-所有已发布刊物可在 [Releases](https://github.com/plsy1/emagzines/releases) 页面下载。Release tag 格式为 `<杂志ID>-<出版日期>`，例如 `te-20260711`。
+所有已发布刊物可在按出版日期排序的 [Magazine Index](INDEX.md) 中浏览和下载。Release tag 格式为 `<杂志ID>-<出版日期>`，例如 `te-20260711`。
 
 ---
 

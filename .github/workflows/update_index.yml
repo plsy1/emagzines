@@ -1,0 +1,37 @@
+name: Update magazine index
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: magazine-publishing
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Generate and publish index
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python helper/generate_index.py "${GITHUB_REPOSITORY}" INDEX.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add INDEX.md
+          if git diff --cached --quiet; then
+            echo "Magazine index is already up to date."
+          else
+            git commit -m "docs: update magazine release index"
+            git push origin HEAD:main
+          fi

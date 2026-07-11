@@ -13,6 +13,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: magazine-publishing
+  cancel-in-progress: false
+
 jobs:
   worker:
     runs-on: ubuntu-latest
