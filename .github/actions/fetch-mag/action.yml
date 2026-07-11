@@ -1,5 +1,5 @@
 name: 'Fetch and Process Magazine'
-description: 'Install Calibre, run Python script, and push results'
+description: 'Install Calibre, run Python script, and publish results to GitHub Releases'
 inputs:
   mag_id:
     description: 'Magazine ID (ny, te, tm)'
@@ -64,40 +64,35 @@ runs:
         name: ${{ env.DATE }}-${{ inputs.mag_id }}
         path: converted_ebooks
 
-    - name: Push to 'magzines' branch
+    - name: Publish GitHub Release
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
       run: |
-        # 针对 --reuse 模式做清理，如果目录已存在则先删除
-        rm -rf repo_magzines
-        
-        # 使用 --sparse 和 --filter=blob:none 组合，实现极轻量克隆
-        git clone --filter=blob:none --branch magzines --single-branch --depth 1 --sparse https://x-access-token:${{ inputs.github_token }}@github.com/${{ github.repository }}.git repo_magzines
-        
-        cd repo_magzines
-        
-        # 必须先进入子仓库后再设置 identity，否则 git commit 会报错不知身份
-        git config user.name "plsy1"
-        git config user.email "plsy1@users.noreply.github.com"
-        
-        # 只针对当前杂志目录下的年份目录进行稀疏检出
-        YEAR=$(echo ${{ env.DATE }} | cut -c 1-4)
-        git sparse-checkout set ${{ env.MAG_FOLDER }}/$YEAR
-        
-        mkdir -p ${{ env.MAG_FOLDER }}/$YEAR
-        
-        if [ -d "${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }}" ]; then
-          echo "Directory ${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }} already exists, skipping push."
-          exit 0
+        set -euo pipefail
+
+        TAG="${{ inputs.mag_id }}-${{ env.DATE }}"
+        TITLE="${{ inputs.mag_name }} - ${{ env.DATE }}"
+        ASSET_DIR="converted_ebooks/${{ env.DATE }}"
+
+        mapfile -d '' ASSETS < <(
+          find "$ASSET_DIR" -maxdepth 1 -type f \
+            \( -name '*.pdf' -o -name '*.epub' \) -print0
+        )
+        if [ "${#ASSETS[@]}" -eq 0 ]; then
+          echo "No release assets found in $ASSET_DIR"
+          exit 1
         fi
-        
-        # 将生成的书籍移入
-        mv ../converted_ebooks/${{ env.DATE }} ${{ env.MAG_FOLDER }}/$YEAR/${{ env.DATE }}
-        
-        git add .
-        
-        if [[ $(git diff --cached --quiet || echo "changes") == "changes" ]]; then
-          git commit -m "Update ${{ inputs.mag_name }} - ${{ env.DATE }}"
-          git push origin magzines
+
+        if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+          echo "Release $TAG already exists; replacing assets with newly generated files."
+          gh release upload "$TAG" "${ASSETS[@]}" \
+            --repo "${{ github.repository }}" \
+            --clobber
         else
-          echo "No changes to push."
+          gh release create "$TAG" "${ASSETS[@]}" \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "$TITLE" \
+            --notes "Automatically generated ${{ inputs.mag_name }} issue for ${{ env.DATE }}."
         fi

@@ -10,6 +10,9 @@ on:
   schedule:
     - cron: '0 1 * * *'
 
+permissions:
+  contents: write
+
 jobs:
   worker:
     runs-on: ubuntu-latest
@@ -24,4 +27,3 @@ jobs:
           mag_name: "The New Yorker Magazine"
           issue_date: ${{ github.event.inputs.issue_date }}
           github_token: ${{ secrets.GITHUB_TOKEN || github.token }}
-

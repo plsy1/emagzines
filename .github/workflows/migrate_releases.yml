@@ -1,0 +1,39 @@
+name: Migrate legacy magazines to Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only list issues without uploading'
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Checkout legacy magzines branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git clone --depth 1 --single-branch --branch magzines \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            magzines_repo
+
+      - name: Migrate PDF and EPUB files
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          helper/migrate_releases.sh \
+            magzines_repo \
+            "${GITHUB_REPOSITORY}" \
+            "${{ inputs.dry_run }}"
