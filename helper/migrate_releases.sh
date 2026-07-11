@@ -61,15 +61,34 @@ while IFS= read -r -d '' asset; do
     continue
   fi
 
+  staging_dir=$(mktemp -d)
+  safe_mag_name=$(printf '%s' "$mag_name" | tr ' ' '-')
+  for source_asset in "${assets[@]}"; do
+    extension=${source_asset##*.}
+    cp "$source_asset" "$staging_dir/$issue_date-$safe_mag_name.$extension"
+  done
+  shopt -s nullglob
+  release_assets=("$staging_dir"/*.pdf "$staging_dir"/*.epub)
+  shopt -u nullglob
+
   if gh release view "$tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
-    gh release upload "$tag" "${assets[@]}" --repo "$REPOSITORY" --clobber
+    gh release view "$tag" \
+      --repo "$REPOSITORY" \
+      --json assets \
+      --jq '.assets[].name' | while IFS= read -r existing_asset; do
+        gh release delete-asset "$tag" "$existing_asset" \
+          --repo "$REPOSITORY" \
+          --yes
+      done
+    gh release upload "$tag" "${release_assets[@]}" --repo "$REPOSITORY" --clobber
   else
-    gh release create "$tag" "${assets[@]}" \
+    gh release create "$tag" "${release_assets[@]}" \
       --repo "$REPOSITORY" \
       --target main \
       --title "$mag_name - $issue_date" \
       --notes "Migrated from the legacy magzines branch."
   fi
+  rm -rf "$staging_dir"
 done < <(find "$SOURCE_DIR" -type f \( -name '*.pdf' -o -name '*.epub' \) -print0)
 
 echo "Migration scan complete. Issues found: $ISSUE_COUNT. Dry run: $DRY_RUN"

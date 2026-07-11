@@ -192,7 +192,9 @@ def main():
     print(f"Publication Date: {date_str}")
 
     # 3. 重命名与目录组织
-    base_name = f"{date_str} - {config['name']}"
+    # Release asset names avoid spaces because GitHub normalizes spaces to dots.
+    safe_magazine_name = config["name"].replace(" ", "-")
+    base_name = f"{date_str}-{safe_magazine_name}"
     target_dir = os.path.join(BOOKS_DIR, date_str)
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
