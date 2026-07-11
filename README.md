@@ -1,20 +1,13 @@
 # eMagzines
 
-eMagzines 使用 GitHub Actions 定时抓取英文杂志，并生成 PDF 和 EPUB 文件。生成的文件会发布为 GitHub Release Assets，不会写入 Git 历史。
+使用 GitHub Actions 定时抓取英文杂志，并生成 PDF 和 EPUB 文件。生成的文件会发布为 GitHub Release Assets，目前抓取的杂志包括：
 
-## 支持的杂志
+- The Economist
 
-| 杂志 | 工作流 | ID | 默认出版日 |
-| --- | --- | --- | --- |
-| The Economist | The Economist | `te` | 周六 |
-| The New Yorker | The New Yorker Magazine | `ny` | 周一 |
-| TIME | TIME Magazine | `tm` | 按期刊页面确定 |
+- The New Yorker
+- TIME
 
-## 下载杂志
-
-推荐从 [Magazine Index](INDEX.md) 浏览和下载。索引会按杂志分类，并按出版日期从新到旧排列，每期都提供 PDF、EPUB 和对应 Release 的链接。
-
-也可以直接进入仓库的 [Releases](https://github.com/plsy1/emagzines/releases) 页面下载。Release tag 格式为 `<杂志ID>-<出版日期>`，例如 `te-20260711`。
+推荐从 [Magazine Index](INDEX.md) 浏览和下载，也可以直接进入仓库的 [Releases](https://github.com/plsy1/emagzines/releases) 页面下载。
 
 ## 个人使用
 
