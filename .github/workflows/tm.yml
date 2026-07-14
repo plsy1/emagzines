@@ -7,6 +7,11 @@ on:
       issue_date:
         description: 'Issue Date or URL (Optional, for old issues)'
         required: false
+      overwrite_existing_release:
+        description: 'Overwrite existing Release assets'
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '0 0 * * *'
 
@@ -30,4 +35,5 @@ jobs:
           mag_id: tm
           mag_name: "TIME Magazine"
           issue_date: ${{ github.event.inputs.issue_date }}
+          overwrite_existing_release: ${{ inputs.overwrite_existing_release || false }}
           github_token: ${{ secrets.GITHUB_TOKEN || github.token }}

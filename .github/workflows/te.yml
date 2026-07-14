@@ -7,6 +7,11 @@ on:
       issue_date:
         description: 'Issue Date (YYYY-MM-DD)'
         required: false
+      overwrite_existing_release:
+        description: 'Overwrite existing Release assets'
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '0 22 * * *'
 
@@ -30,4 +35,5 @@ jobs:
           mag_id: te
           mag_name: "The Economist"
           issue_date: ${{ github.event.inputs.issue_date }}
+          overwrite_existing_release: ${{ inputs.overwrite_existing_release || false }}
           github_token: ${{ secrets.GITHUB_TOKEN || github.token }}

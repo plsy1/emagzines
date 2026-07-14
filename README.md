@@ -17,7 +17,7 @@
 2. 打开 Fork 后仓库的 **Actions** 页面，按提示启用工作流。
 3. 进入 **Settings → Actions → General → Workflow permissions**，选择 **Read and write permissions** 并保存。
 4. 返回 **Actions** 页面，在左侧选择要抓取的杂志工作流。
-5. 点击 **Run workflow**，可选填写日期或 TIME 杂志页面 URL，然后开始运行。
+5. 点击 **Run workflow**，可选填写日期或 TIME 杂志页面 URL；如需替换已有同一期文件，可勾选 **Overwrite existing Release assets**，然后开始运行。
 
 不填写参数时会尝试抓取最新一期。The Economist 和 The New Yorker 的日期可使用 `YYYY-MM-DD` 格式；工作流会分别对齐到最近的周六和周一。TIME 抓取历史期刊时可填写对应的杂志页面 URL。
 
@@ -50,7 +50,7 @@ GITHUB_TOKEN=你的_GitHub_Token
 
 ## 自动更新
 
-三种杂志都配置了定时工作流，也可以随时手动触发。同一期重复运行时，工作流会替换对应 Release 中的 PDF 和 EPUB，不会重复创建同名 Release。
+三种杂志都配置了定时工作流，也可以随时手动触发。同一期重复运行时，默认保留已有 Release 和 PDF、EPUB，不会覆盖或重复创建；手动运行并开启 **Overwrite existing Release assets** 后，才会使用新生成的文件替换原有资产。定时任务始终使用默认的不覆盖行为。
 
 ## 主要组件
 

@@ -10,6 +10,10 @@ inputs:
   issue_date:
     description: 'Issue Date (YYYY-MM-DD)'
     required: false
+  overwrite_existing_release:
+    description: 'Whether to overwrite assets when the release already exists'
+    required: false
+    default: 'false'
   github_token:
     description: 'GitHub Token'
     required: true
@@ -68,6 +72,7 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}
+        OVERWRITE_EXISTING_RELEASE: ${{ inputs.overwrite_existing_release }}
       run: |
         set -euo pipefail
 
@@ -85,18 +90,22 @@ runs:
         fi
 
         if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
-          echo "Release $TAG already exists; replacing all assets with newly generated files."
-          gh release view "$TAG" \
-            --repo "${{ github.repository }}" \
-            --json assets \
-            --jq '.assets[].name' | while IFS= read -r existing_asset; do
-              gh release delete-asset "$TAG" "$existing_asset" \
-                --repo "${{ github.repository }}" \
-                --yes
-            done
-          gh release upload "$TAG" "${ASSETS[@]}" \
-            --repo "${{ github.repository }}" \
-            --clobber
+          if [ "$OVERWRITE_EXISTING_RELEASE" = "true" ]; then
+            echo "Release $TAG already exists; replacing all assets with newly generated files."
+            gh release view "$TAG" \
+              --repo "${{ github.repository }}" \
+              --json assets \
+              --jq '.assets[].name' | while IFS= read -r existing_asset; do
+                gh release delete-asset "$TAG" "$existing_asset" \
+                  --repo "${{ github.repository }}" \
+                  --yes
+              done
+            gh release upload "$TAG" "${ASSETS[@]}" \
+              --repo "${{ github.repository }}" \
+              --clobber
+          else
+            echo "Release $TAG already exists; keeping the existing release and assets."
+          fi
         else
           gh release create "$TAG" "${ASSETS[@]}" \
             --repo "${{ github.repository }}" \
