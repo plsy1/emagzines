@@ -6,6 +6,7 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 
 | Issue date | PDF | EPUB | Release |
 | --- | --- | --- | --- |
+| 2026-08-22 | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260822/20260822-The-Economist.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260822/20260822-The-Economist.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/te-20260822) |
 | 2026-08-15 | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260815/20260815-The-Economist.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260815/20260815-The-Economist.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/te-20260815) |
 | 2026-08-08 | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260808/20260808-The-Economist.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260808/20260808-The-Economist.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/te-20260808) |
 | 2026-08-01 | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260801/20260801-The-Economist.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/te-20260801/20260801-The-Economist.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/te-20260801) |
@@ -222,4 +223,4 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 | 2024-12-09 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241209) |
 | 2024-11-25 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241125) |
 
-_Total issues: 205._
+_Total issues: 206._
