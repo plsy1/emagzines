@@ -198,6 +198,7 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 
 | Issue date | PDF | EPUB | Release |
 | --- | --- | --- | --- |
+| 2026-11-09 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261109/20261109-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261109/20261109-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20261109) |
 | 2026-10-26 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261026/20261026-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261026/20261026-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20261026) |
 | 2026-10-12 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261012/20261012-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20261012/20261012-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20261012) |
 | 2026-09-28 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20260928/20260928-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20260928/20260928-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20260928) |
@@ -237,4 +238,4 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 | 2024-12-09 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241209) |
 | 2024-11-25 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241125) |
 
-_Total issues: 220._
+_Total issues: 221._
