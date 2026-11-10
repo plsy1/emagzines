@@ -100,6 +100,7 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 
 | Issue date | PDF | EPUB | Release |
 | --- | --- | --- | --- |
+| 2026-11-16 | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261116/20261116-The-New-Yorker-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261116/20261116-The-New-Yorker-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/ny-20261116) |
 | 2026-11-09 | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261109/20261109-The-New-Yorker-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261109/20261109-The-New-Yorker-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/ny-20261109) |
 | 2026-11-02 | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261102/20261102-The-New-Yorker-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261102/20261102-The-New-Yorker-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/ny-20261102) |
 | 2026-10-26 | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261026/20261026-The-New-Yorker-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/ny-20261026/20261026-The-New-Yorker-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/ny-20261026) |
@@ -239,4 +240,4 @@ This file is generated automatically from GitHub Releases. Issues are sorted by 
 | 2024-12-09 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241209/20241209-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241209) |
 | 2024-11-25 | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.pdf) | [Download](https://github.com/plsy1/emagzines/releases/download/tm-20241125/20241125-TIME-Magazine.epub) | [View](https://github.com/plsy1/emagzines/releases/tag/tm-20241125) |
 
-_Total issues: 222._
+_Total issues: 223._
